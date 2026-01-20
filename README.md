@@ -6,7 +6,7 @@ This project uses **GSAP Timeline** and **ScrollTrigger** to create smooth, inte
 ---
 
 ## 🚀 Live Preview
-👉 Add your deployed link here (Comming soon)
+https://scroll-animation-two-bice.vercel.app/
 
 ---
 
