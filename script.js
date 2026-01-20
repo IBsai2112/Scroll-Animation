@@ -1,74 +1,140 @@
-var tl = gsap.timeline({scrollTrigger:{
-    trigger:".two",
-    start:"0% 98%",
-    end:"55% 50%",
-    scrub:true,
-    // markers:true
-}}) 
-tl.to("#fanta",{
-    top:"108%",
-    left:"5%"
-},'sameTime')
+gsap.registerPlugin(ScrollTrigger);
 
-tl.to("#halfOrange",{
-    top:"130%",
-    left:"20%"
-},'sameTime')
+/* ===============================
+   STORE ORIGINAL STATES
+================================ */
+const originalState = {};
 
-tl.to("#twoOrange",{
-    top:"155%",
-    right:"40%",
-    width:"20%"
-},'sameTime')
+function saveState(selector) {
+  const el = document.querySelector(selector);
+  originalState[selector] = {
+    top: gsap.getProperty(el, "top"),
+    left: gsap.getProperty(el, "left"),
+    right: gsap.getProperty(el, "right"),
+    scale: gsap.getProperty(el, "scale"),
+    rotate: gsap.getProperty(el, "rotate")
+  };
+}
 
-tl.to("#leaf",{
-    top:"115%",
-    rotate:"6deg",
-    left:"70%"
-},'sameTime')
+[
+  "#fanta",
+  "#halfOrange",
+  "#twoOrange",
+  "#leaf"
+].forEach(saveState);
 
-// second timeline
-var tl2 = gsap.timeline({scrollTrigger:{
-    trigger:".three",
-    start:"0% 98%",
-    end:"45% 50%",
-    scrub:true,
-    // markers:true
-}}) 
+/* ===============================
+   SECTION TWO
+================================ */
+const tl = gsap.timeline({
+  scrollTrigger: {
+    trigger: ".two",
+    start: "top bottom",
+    end: "center center",
+    scrub: true,
+    invalidateOnRefresh: true,
 
-tl2.from("#lemon",{
-    left:"-100",
-    top:"-15%"
-},'a')
+    // 🔥 RESTORE WHEN SCROLLING UP
+    onLeaveBack: () => {
+      gsap.to("#fanta", originalState["#fanta"]);
+      gsap.to("#halfOrange", originalState["#halfOrange"]);
+      gsap.to("#twoOrange", originalState["#twoOrange"]);
+      gsap.to("#leaf", originalState["#leaf"]);
+    }
+  }
+});
 
-tl2.from("#CocaCola",{
-    rotate:"-90deg",
-    left:"-100",
-    top:"0%"
-},'a')
+tl.to("#fanta", {
+  top: "108%",
+  left: "5%",
+  scale: 1,
+  overwrite: "auto"
+})
 
-tl2.from("#dew",{
-    rotate:"90deg",
-    left:"100",
-    top:"5%"
-},'a')
+.to("#halfOrange", {
+  top: "130%",
+  left: "20%",
+  scale: 1,
+  overwrite: "auto"
+}, "<")
 
-tl2.to("#fanta",{
-    width:"28%",
-    left:"36%",
-    top:"218%"
-},'a')
+.to("#twoOrange", {
+  top: "155%",
+  right: "40%",
+  scale: 1,
+  overwrite: "auto"
+}, "<")
 
-tl2.to("#halfOrange",{
-    width:"26%",
-    left:"37%",
-    top:"205%"
-},'a')
+.to("#leaf", {
+  top: "115%",
+  left: "70%",
+  rotate: 6,
+  overwrite: "auto"
+}, "<");
 
-var secondFanta = document.getElementById('secondFanta');
-  
-  // Add a click event listener to the button
-  secondFanta.addEventListener('click', function() {
-    // Redirect the user to the buy.html page
-    window.location.href = '/buyingPage/buy.html';
-  });
+
+/* ===============================
+   SECTION THREE
+================================ */
+const tl2 = gsap.timeline({
+  scrollTrigger: {
+    trigger: ".three",
+    start: "top bottom",
+    end: "center center",
+    scrub: true,
+    invalidateOnRefresh: true,
+
+    // 🔥 RESTORE WHEN SCROLLING UP
+    onLeaveBack: () => {
+      gsap.to("#fanta", originalState["#fanta"]);
+      gsap.to("#halfOrange", originalState["#halfOrange"]);
+    }
+  }
+});
+
+tl2.fromTo("#lemon",
+  { x: -150, rotate: 0 },
+  { x: 0, rotate: 0 }
+)
+
+.fromTo("#CocaCola",
+  { x: -150, rotate: 0 },
+  { x: 0, rotate: 0 },
+  "<"
+)
+
+.fromTo("#dew",
+  { x: 150, rotate: 0 },
+  { x: 0, rotate: 0 },
+  "<"
+)
+
+.to("#fanta", {
+  scale: 1.05,
+  top: "212%",
+  left: "34%",
+  overwrite: "auto"
+}, "<")
+
+.to("#halfOrange", {
+  scale: 1.05,
+  top: "195%",
+  left: "35%",
+  overwrite: "auto"
+}, "<");
+
+
+/* ===============================
+   REFRESH AFTER LOAD
+================================ */
+window.addEventListener("load", () => {
+  ScrollTrigger.refresh();
+});
+
+
+/* ===============================
+   CLICK HANDLER
+================================ */
+document.getElementById("secondFanta").addEventListener("click", () => {
+  window.location.href = "/buyingPage/buy.html";
+});
